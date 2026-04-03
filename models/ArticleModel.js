@@ -8,6 +8,7 @@ const commentSchema = new Schema({
   },
   comment: {
     type: String,
+    required:[true,"Enter a comment"],
   },
 });
 

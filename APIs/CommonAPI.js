@@ -3,6 +3,7 @@ import { UserModel } from "../models/UserModel.js";
 import { hash, compare } from "bcryptjs";
 import { config } from "dotenv";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../middlewares/VerifyToken.js";
 const { sign } = jwt;
 export const commonApp = exp.Router();
 config();
@@ -16,6 +17,8 @@ commonApp.post("/users", async (req, res) => {
   if (!allowedRoles.includes(newUser.role)) {
     return res.status(400).json({ message: "Invalid role" });
   }
+
+  //run validators manually
   //hash password and replace plain with hashed one
   newUser.password = await hash(newUser.password, 12);
   //create New user document
@@ -44,7 +47,19 @@ commonApp.post("/login", async (req, res) => {
     return res.status(400).json({ message: "Invalid password" });
   }
   //create jwt
-  const signedToken = sign({id:user._id, email: email, role: user.role }, process.env.SECRET_KEY, { expiresIn: "1h" });
+  const signedToken = sign(
+    { id: user._id, 
+      email: email, 
+      role: user.role, 
+      firstName: user.firstName, 
+      lastName:user.lastName,
+      profileImageUrl: user.profileImageUrl 
+    },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: "1h",
+    },
+  );
 
   //set token to res header as httpOnly cookie
   res.cookie("token", signedToken, {
@@ -61,7 +76,7 @@ commonApp.post("/login", async (req, res) => {
 });
 
 //Route for Logout
-commonApp.get("/logout",  (req, res) => {
+commonApp.get("/logout", (req, res) => {
   //delete token from cookie storage
   res.clearCookie("token", {
     httpOnly: true,
@@ -69,5 +84,24 @@ commonApp.get("/logout",  (req, res) => {
     sameSite: "lax",
   });
   //send res
-  res.status(200).json({message:"Logout success"})
+  res.status(200).json({ message: "Logout success" });
+});
+
+//Page refresh
+commonApp.get("/check-auth", verifyToken("USER", "AUTHOR", "ADMIN"), (req, res) => {
+  res.status(200).json({
+    message: "authenticated",
+    payload: req.user,
+  });
+});
+
+//Change password
+commonApp.put("/password", verifyToken("USER", "AUTHOR", "ADMIN"), async (req, res) => {
+  //check current password and new password are same
+  //get current password of user/admin/author
+  //check the current password of req and user are not same
+  // hash new password
+  //replace current password of user with hashed new password
+  //save
+  //send res
 });

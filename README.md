@@ -24,3 +24,15 @@
 
 6. Implement APIs
 7. Create common api for register, login and logout
+
+
+
+
+
+
+### Frontend
+    Dynamic, Responsive User Interfaces(UI== web page--->Browser)
+                               HTML
+                  CSS(styles & Responsiveness)  , Bootstrap, TailwindCSS    
+    JavaScript
+    ReactJS/Angular/Vue/NextJS        

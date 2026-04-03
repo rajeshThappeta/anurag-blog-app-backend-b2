@@ -6,9 +6,15 @@ import { authorApp } from "./APIs/AuthorAPI.js";
 import { adminApp } from "./APIs/AdminAPI.js";
 import { commonApp } from "./APIs/CommonAPI.js";
 import cookieParser from "cookie-parser";
+import cors from 'cors'
 config();
 //create express app
 const app = exp();
+//enable cors
+app.use(cors({
+  origin:['http://localhost:5173'],
+  credentials:true
+}))
 //add cookie parser middeleware
 app.use(cookieParser())
 //body parser middleware
